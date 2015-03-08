@@ -77,11 +77,9 @@
 		B0DD8F891AAD09A50086DEE4 /* Pitch Perfect */ = {
 			isa = PBXGroup;
 			children = (
-				B0DD8F8C1AAD09A50086DEE4 /* AppDelegate.swift */,
 				B0DD8F8E1AAD09A50086DEE4 /* ViewController.swift */,
 				B0DD8F901AAD09A50086DEE4 /* Main.storyboard */,
-				B0DD8F931AAD09A50086DEE4 /* Images.xcassets */,
-				B0DD8F951AAD09A50086DEE4 /* LaunchScreen.xib */,
+				B0DD8F8C1AAD09A50086DEE4 /* AppDelegate.swift */,
 				B0DD8F8A1AAD09A50086DEE4 /* Supporting Files */,
 			);
 			path = "Pitch Perfect";
@@ -90,6 +88,8 @@
 		B0DD8F8A1AAD09A50086DEE4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				B0DD8F931AAD09A50086DEE4 /* Images.xcassets */,
+				B0DD8F951AAD09A50086DEE4 /* LaunchScreen.xib */,
 				B0DD8F8B1AAD09A50086DEE4 /* Info.plist */,
 			);
 			name = "Supporting Files";
