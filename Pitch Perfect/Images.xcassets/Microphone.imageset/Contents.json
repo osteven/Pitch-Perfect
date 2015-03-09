@@ -1,0 +1,22 @@
+{
+  "images" : [
+    {
+      "idiom" : "universal",
+      "scale" : "1x",
+      "filename" : "microphone_isolated_100x100.jpeg"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x",
+      "filename" : "microphone_isolated_200x200.jpeg"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "version" : 1,
+    "author" : "xcode"
+  }
+}
