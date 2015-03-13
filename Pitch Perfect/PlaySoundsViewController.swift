@@ -108,8 +108,12 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         audioEngineCommon(pitchBlock)
     }
 
-    // pass in a closure that creates an AVAudioUnit effectNode with the desired effect
-    // everything else is common boilerplate
+    /* pass in a closure that creates an AVAudioUnit effectNode with the desired effect
+        everything else is common boilerplate
+        Some of the boilerplate is from:
+        http://stackoverflow.com/questions/24443863/trouble-hooking-up-avaudiouniteffect-with-avaudioengine
+        Closure ideas from: http://hondrouthoughts.blogspot.com/2014/09/more-avaudioplayernode-with-swift-and.html
+    */
     func audioEngineCommon(effectBlock: EffectBlock) {
         if (nil != audioPlayer) { audioPlayer!.stop() }
         resetAudioEngine()
@@ -127,6 +131,12 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         audioEngineIsPlaying = true
         audioPlayerNode.scheduleFile(audioFile, atTime: nil, completionHandler: { () -> Void in
             self.audioEngineIsPlaying = false
+            /* Dispatch it on main queue to work around the bug in AVAudioPlayerNode.scheduleFile that delays
+                the update for 5 seconds.  This workaround makes the update happen too quickly (especially 
+                the echo effect).  I tried inserting a delay, but that screws up the audio (again especially
+                the echo effect). 
+                http://discussions.udacity.com/t/avaudioplayernode-schedulefile-with-a-completionhandler/12872/2
+            */
             dispatch_async(dispatch_get_main_queue()) { self.manageButtons() }
         })
         audioEngine.startAndReturnError(nil)
@@ -157,6 +167,9 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     @IBAction func playSoundChipmunk() { playAudioWithVariablePitch(1000) }
     @IBAction func playSoundDarthVader() { playAudioWithVariablePitch(-1000) }
 
+
+    /* reverb based on: https://books.google.com/books?id=5baVBQAAQBAJ&pg=PA707&lpg=PA707&dq=AVAudioUnitReverb&source=bl&ots=3X2xSCaIS9&sig=p2ipP-sRSFrvXRbWKAgCSmCLhmI&hl=en&sa=X&ei=Ph4CVdCqLcSlyATNmYKYAg&ved=0CCMQ6AEwATgK#v=onepage&q=AVAudioUnitReverb&f=false
+    */
     @IBAction func playSoundReverb() {
         func reverbBlock() -> AVAudioUnit {
             let reverbEffect = AVAudioUnitReverb()
