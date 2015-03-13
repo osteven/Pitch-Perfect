@@ -21,9 +21,6 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     let audioEngine: AVAudioEngine = AVAudioEngine()
     var audioFile: AVAudioFile? = nil
     var audioEngineIsPlaying = false
-    var audioDuration: NSTimeInterval = 0.0
-    var isEchoEffect = false
-    var audioBegin: NSDate? = nil
 
     // MARK: -
     // MARK: Outlets
@@ -45,8 +42,6 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
             var error: NSError?
             audioPlayer = AVAudioPlayer(contentsOfURL: recAudio.filePathURL, error: &error)
             if let aPlayer = audioPlayer {
-                audioDuration = aPlayer.duration
-                println("duration=\(audioDuration)")
                 aPlayer.delegate = self
                 aPlayer.enableRate = true
                 aPlayer.prepareToPlay()
@@ -64,7 +59,6 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        isEchoEffect = false
         manageButtons()
     }
 
@@ -80,12 +74,6 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         darthVaderPlayButton.enabled = notPlaying
         reverbPlayButton.enabled = notPlaying
         echoPlayButton.enabled = notPlaying
-
-        if (self.audioBegin != nil) {
-            let audioEnd = NSDate()
-            let timeInterval: Double = audioEnd.timeIntervalSinceDate(self.audioBegin!);
-            println("   buttons=\(timeInterval)")
-        }
     }
 
 
@@ -138,20 +126,10 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
 
         audioEngineIsPlaying = true
         audioPlayerNode.scheduleFile(audioFile, atTime: nil, completionHandler: { () -> Void in
-            let audioEnd = NSDate()
-            let timeInterval: Double = audioEnd.timeIntervalSinceDate(self.audioBegin!);
-            println("   actual=\(timeInterval)")
             self.audioEngineIsPlaying = false
-
-            let delaySecs = self.isEchoEffect ? self.audioDuration * 0.5 : 1.0
-
-            self.delay(delaySecs, self.manageButtons)
-
-            //         dispatch_async(dispatch_get_main_queue()) { self.manageButtons() }
+            dispatch_async(dispatch_get_main_queue()) { self.manageButtons() }
         })
         audioEngine.startAndReturnError(nil)
-
-        audioBegin = NSDate()
         audioPlayerNode.play()
         manageButtons()
     }
@@ -160,16 +138,6 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         manageButtons()
     }
 
-
-
-    func delay(delay:Double, closure:()->()) {
-        dispatch_after(
-            dispatch_time(
-                DISPATCH_TIME_NOW,
-                Int64(delay * Double(NSEC_PER_SEC))
-            ),
-            dispatch_get_main_queue(), closure)
-    }
 
 
     // MARK: -
@@ -200,7 +168,6 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     }
     @IBAction func playSoundEcho() {
         func echoBlock() -> AVAudioUnit {
-            isEchoEffect = true
             let echoEffect = AVAudioUnitDelay()
             echoEffect.wetDryMix = 50
             return echoEffect
