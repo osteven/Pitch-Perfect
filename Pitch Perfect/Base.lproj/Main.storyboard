@@ -122,7 +122,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ehh-QY-2U9" userLabel="Fast Button">
-                                <rect key="frame" x="330" y="116" width="100" height="100"/>
+                                <rect key="frame" x="330" y="68" width="100" height="100"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="100" id="AJ3-L8-f37"/>
                                     <constraint firstAttribute="width" constant="100" id="Ms8-Eh-HMR"/>
@@ -159,7 +159,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ovt-C5-vdk" userLabel="Chipmunk">
-                                <rect key="frame" x="170" y="226" width="100" height="100"/>
+                                <rect key="frame" x="170" y="174" width="100" height="100"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="100" id="0Wz-Cw-gmn"/>
                                     <constraint firstAttribute="height" constant="100" id="2Xf-ge-ow1"/>
@@ -196,16 +196,28 @@
                                 </connections>
                             </button>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="trN-Na-xJI" userLabel="Stop Playing Button">
-                                <rect key="frame" x="275" y="502" width="50" height="50"/>
+                                <rect key="frame" x="275" y="518" width="50" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="7ew-0h-5Ol"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="ROA-H4-a4c"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="50" id="Yww-rZ-12y"/>
+                                    <constraint firstAttribute="height" constant="50" id="oMe-to-C5p"/>
+                                </constraints>
                                 <state key="normal" image="stop">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="ROA-H4-a4c"/>
+                                        <exclude reference="Yww-rZ-12y"/>
+                                    </mask>
+                                </variation>
                                 <connections>
                                     <action selector="stopPlaying" destination="sgj-oo-ShR" eventType="touchUpInside" id="wDC-Nt-78P"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uSS-zU-ewq" userLabel="Darth Vader">
-                                <rect key="frame" x="330" y="226" width="100" height="100"/>
+                                <rect key="frame" x="330" y="174" width="100" height="100"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="100" id="5OY-C3-Oil"/>
                                     <constraint firstAttribute="height" constant="100" id="KB7-w8-XVi"/>
@@ -242,7 +254,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FYl-JP-5aK" userLabel="Slow Button">
-                                <rect key="frame" x="170" y="116" width="100" height="100"/>
+                                <rect key="frame" x="170" y="68" width="100" height="100"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="100" id="Fz8-Ia-cdc"/>
                                     <constraint firstAttribute="height" constant="100" id="kWu-ij-cml"/>
@@ -255,7 +267,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bjN-vL-IDD" userLabel="Reverb">
-                                <rect key="frame" x="170" y="336" width="100" height="100"/>
+                                <rect key="frame" x="170" y="280" width="100" height="100"/>
                                 <state key="normal" image="reverb">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -264,7 +276,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xoM-pU-PbM" userLabel="Echo">
-                                <rect key="frame" x="330" y="336" width="100" height="100"/>
+                                <rect key="frame" x="330" y="280" width="100" height="100"/>
                                 <state key="normal" image="echo">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -276,20 +288,35 @@
                         <color key="backgroundColor" red="0.66003895994644746" green="0.78317212301587302" blue="0.70319773620028414" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="centerX" secondItem="FYl-JP-5aK" secondAttribute="centerX" constant="80" id="4C7-tg-f1X"/>
-                            <constraint firstItem="uSS-zU-ewq" firstAttribute="top" secondItem="ehh-QY-2U9" secondAttribute="bottom" constant="10" id="7iA-fD-4pq"/>
-                            <constraint firstItem="qJg-JW-yE5" firstAttribute="top" secondItem="trN-Na-xJI" secondAttribute="bottom" constant="48" id="8Sm-2Q-Taj"/>
+                            <constraint firstItem="trN-Na-xJI" firstAttribute="top" secondItem="bjN-vL-IDD" secondAttribute="bottom" priority="249" constant="48" id="4N4-WX-3Uu"/>
+                            <constraint firstItem="FYl-JP-5aK" firstAttribute="bottom" secondItem="ehh-QY-2U9" secondAttribute="bottom" id="6bO-yn-XNW"/>
+                            <constraint firstItem="uSS-zU-ewq" firstAttribute="top" secondItem="ehh-QY-2U9" secondAttribute="bottom" constant="6" id="7iA-fD-4pq"/>
+                            <constraint firstItem="qJg-JW-yE5" firstAttribute="top" secondItem="trN-Na-xJI" secondAttribute="bottom" constant="32" id="8Sm-2Q-Taj"/>
                             <constraint firstAttribute="centerX" secondItem="bjN-vL-IDD" secondAttribute="centerX" constant="80" id="8Y1-e8-SVV"/>
                             <constraint firstAttribute="centerX" secondItem="Ovt-C5-vdk" secondAttribute="centerX" constant="80" id="CY7-yi-tJK"/>
                             <constraint firstAttribute="centerX" secondItem="ehh-QY-2U9" secondAttribute="centerX" constant="-80" id="I7E-xy-Zx4"/>
                             <constraint firstAttribute="centerY" secondItem="Ovt-C5-vdk" secondAttribute="centerY" constant="24" id="Isl-To-rlN"/>
+                            <constraint firstItem="xoM-pU-PbM" firstAttribute="bottom" secondItem="bjN-vL-IDD" secondAttribute="bottom" id="KxQ-fD-hez"/>
                             <constraint firstAttribute="centerX" secondItem="trN-Na-xJI" secondAttribute="centerX" id="NZ7-7Q-Hcm"/>
-                            <constraint firstItem="xoM-pU-PbM" firstAttribute="top" secondItem="uSS-zU-ewq" secondAttribute="bottom" constant="10" id="Zue-Vu-nsx"/>
-                            <constraint firstItem="bjN-vL-IDD" firstAttribute="top" secondItem="Ovt-C5-vdk" secondAttribute="bottom" constant="10" id="ckj-fM-lpt"/>
-                            <constraint firstItem="Ovt-C5-vdk" firstAttribute="top" secondItem="FYl-JP-5aK" secondAttribute="bottom" constant="10" id="kKJ-xe-tMT"/>
+                            <constraint firstItem="FYl-JP-5aK" firstAttribute="top" secondItem="1nW-mv-Tnc" secondAttribute="bottom" constant="4" id="Yg3-2c-LKF"/>
+                            <constraint firstItem="xoM-pU-PbM" firstAttribute="top" secondItem="uSS-zU-ewq" secondAttribute="bottom" constant="6" id="Zue-Vu-nsx"/>
+                            <constraint firstItem="trN-Na-xJI" firstAttribute="top" secondItem="xoM-pU-PbM" secondAttribute="bottom" priority="249" constant="48" id="c7x-hZ-dbX"/>
+                            <constraint firstItem="bjN-vL-IDD" firstAttribute="top" secondItem="Ovt-C5-vdk" secondAttribute="bottom" constant="6" id="ckj-fM-lpt"/>
+                            <constraint firstItem="Ovt-C5-vdk" firstAttribute="top" secondItem="FYl-JP-5aK" secondAttribute="bottom" constant="6" id="kKJ-xe-tMT"/>
                             <constraint firstAttribute="centerX" secondItem="xoM-pU-PbM" secondAttribute="centerX" constant="-80" id="mbl-qn-veS"/>
+                            <constraint firstItem="trN-Na-xJI" firstAttribute="leading" secondItem="bjN-vL-IDD" secondAttribute="trailing" constant="5" id="mff-6c-ke9"/>
+                            <constraint firstItem="ehh-QY-2U9" firstAttribute="top" secondItem="1nW-mv-Tnc" secondAttribute="bottom" constant="4" id="rIE-v0-tH3"/>
                             <constraint firstAttribute="centerX" secondItem="uSS-zU-ewq" secondAttribute="centerX" constant="-80" id="s09-U1-FOH"/>
                             <constraint firstAttribute="centerY" secondItem="uSS-zU-ewq" secondAttribute="centerY" constant="24" id="wTY-oU-D5A"/>
+                            <constraint firstItem="Ovt-C5-vdk" firstAttribute="bottom" secondItem="uSS-zU-ewq" secondAttribute="bottom" id="ziD-0k-Icp"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="Isl-To-rlN"/>
+                                <exclude reference="wTY-oU-D5A"/>
+                                <exclude reference="mff-6c-ke9"/>
+                            </mask>
+                        </variation>
                     </view>
                     <connections>
                         <outlet property="chipmunkPlayButton" destination="Ovt-C5-vdk" id="Lak-xw-lu2"/>
