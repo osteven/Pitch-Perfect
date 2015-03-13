@@ -7,3 +7,14 @@
 //
 
 import Foundation
+
+
+class RecordedAudio {
+    let title: String
+    let filePathURL: NSURL
+
+    init(title: String, andURL URL: NSURL) {
+        self.title = title
+        self.filePathURL = URL
+    }
+}
