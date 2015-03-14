@@ -86,6 +86,7 @@
 				B0D204E11AB3B1CE005BEE81 /* Main.storyboard */,
 				B0BA284A1AAE052F00220C1A /* PlaySoundsViewController.swift */,
 				B0DD8F8C1AAD09A50086DEE4 /* AppDelegate.swift */,
+				B0DD8F931AAD09A50086DEE4 /* Images.xcassets */,
 				B0DD8F8A1AAD09A50086DEE4 /* Supporting Files */,
 			);
 			path = "Pitch Perfect";
@@ -94,7 +95,6 @@
 		B0DD8F8A1AAD09A50086DEE4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				B0DD8F931AAD09A50086DEE4 /* Images.xcassets */,
 				B0DD8F951AAD09A50086DEE4 /* LaunchScreen.xib */,
 				B0DD8F8B1AAD09A50086DEE4 /* Info.plist */,
 			);
