@@ -15,7 +15,7 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     // MARK: -
     // MARK: Properties
     var audioRecorder: AVAudioRecorder? = nil
-    let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
+    let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as! String
     let wavFileNameFormatter = NSDateFormatter()
     let audioSession = AVAudioSession.sharedInstance()
     var recordedAudio: RecordedAudio? = nil
@@ -65,7 +65,7 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "stopRecording" {
-            let playSoundsVC = segue.destinationViewController as PlaySoundsViewController
+            let playSoundsVC = segue.destinationViewController as! PlaySoundsViewController
             if let recAudio = sender as? RecordedAudio {
                 playSoundsVC.receivedAudio = recAudio
             }

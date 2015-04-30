@@ -137,7 +137,15 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
                 the echo effect). 
                 http://discussions.udacity.com/t/avaudioplayernode-schedulefile-with-a-completionhandler/12872/2
             */
-            dispatch_async(dispatch_get_main_queue()) { self.manageButtons() }
+            //   dispatch_async(dispatch_get_main_queue()) { self.manageButtons() }
+
+                self.audioEngineIsPlaying = false
+                let playerTime = audioPlayerNode.playerTimeForNodeTime(audioPlayerNode.lastRenderTime)
+                let remainingDuration = Double(self.audioFile!.length) - Double(playerTime.sampleTime)
+                let delayInSecs: Double =  Double(NSEC_PER_SEC) * (remainingDuration / self.audioFile!.processingFormat.sampleRate)
+                let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(delayInSecs))
+                dispatch_after(delayTime, dispatch_get_main_queue(), { self.manageButtons() })
+
         })
         audioEngine.startAndReturnError(nil)
         audioPlayerNode.play()
@@ -188,3 +196,12 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         audioEngineCommon(echoBlock)
     }
 }
+
+
+
+/*
+
+
+
+
+*/
