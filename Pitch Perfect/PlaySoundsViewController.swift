@@ -40,20 +40,30 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
 
         if let recAudio = receivedAudio {
             var error: NSError?
-            audioPlayer = AVAudioPlayer(contentsOfURL: recAudio.filePathURL, error: &error)
+            do {
+                audioPlayer = try AVAudioPlayer(contentsOfURL: recAudio.filePathURL)
+            } catch let error1 as NSError {
+                error = error1
+                audioPlayer = nil
+            }
             if let aPlayer = audioPlayer {
                 aPlayer.delegate = self
                 aPlayer.enableRate = true
                 aPlayer.prepareToPlay()
             } else if let e = error {
-                println("error loading receivedAudio URL: \(e.localizedDescription)")
+                print("error loading receivedAudio URL: \(e.localizedDescription)")
                 return
             } else {
-                println("unknown error creating Audio Player")
+                print("unknown error creating Audio Player")
                 return
             }
-            audioFile = AVAudioFile(forReading: recAudio.filePathURL, error: &error)
-            if nil != error { println("error loading AVAudioFile: \(error!.localizedDescription)") }
+            do {
+                audioFile = try AVAudioFile(forReading: recAudio.filePathURL)
+            } catch let error1 as NSError {
+                error = error1
+                audioFile = nil
+            }
+            if nil != error { print("error loading AVAudioFile: \(error!.localizedDescription)") }
         }
     }
 
@@ -115,6 +125,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         Closure ideas from: http://hondrouthoughts.blogspot.com/2014/09/more-avaudioplayernode-with-swift-and.html
     */
     func audioEngineCommon(effectBlock: EffectBlock) {
+        guard let audioFile = self.audioFile else { print("audioFile is nil in audioEngineCommon"); return }
         if (nil != audioPlayer) { audioPlayer!.stop() }
         resetAudioEngine()
 
@@ -131,28 +142,36 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         audioEngineIsPlaying = true
         audioPlayerNode.scheduleFile(audioFile, atTime: nil, completionHandler: { () -> Void in
             self.audioEngineIsPlaying = false
+            self.audioEngineIsPlaying = false
+            guard let lastRenderTime = audioPlayerNode.lastRenderTime,
+                let playerTime = audioPlayerNode.playerTimeForNodeTime(lastRenderTime) else {
+                dispatch_async(dispatch_get_main_queue()) { self.manageButtons() }
+                return
+            }
+
             /* Dispatch it on main queue to work around the bug in AVAudioPlayerNode.scheduleFile that delays
-                the update for 5 seconds.  This workaround makes the update happen too quickly (especially 
-                the echo effect).  I tried inserting a delay, but that screws up the audio (again especially
-                the echo effect). 
-                http://discussions.udacity.com/t/avaudioplayernode-schedulefile-with-a-completionhandler/12872/2
+            the update for 5 seconds.  This workaround makes the update happen too quickly (especially
+            the echo effect).  I tried inserting a delay, but that screws up the audio (again especially
+            the echo effect).
+            http://discussions.udacity.com/t/avaudioplayernode-schedulefile-with-a-completionhandler/12872/2
             */
-            //   dispatch_async(dispatch_get_main_queue()) { self.manageButtons() }
-
-                self.audioEngineIsPlaying = false
-                let playerTime = audioPlayerNode.playerTimeForNodeTime(audioPlayerNode.lastRenderTime)
-                let remainingDuration = Double(self.audioFile!.length) - Double(playerTime.sampleTime)
-                let delayInSecs: Double =  Double(NSEC_PER_SEC) * (remainingDuration / self.audioFile!.processingFormat.sampleRate)
-                let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(delayInSecs))
-                dispatch_after(delayTime, dispatch_get_main_queue(), { self.manageButtons() })
-
+            let remainingDuration = Double(audioFile.length) - Double(playerTime.sampleTime)
+            let delayInSecs: Double =  Double(NSEC_PER_SEC) * (remainingDuration / audioFile.processingFormat.sampleRate)
+            let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(delayInSecs))
+            dispatch_after(delayTime, dispatch_get_main_queue(), { self.manageButtons() })
         })
-        audioEngine.startAndReturnError(nil)
+
+        do {
+            try audioEngine.start()
+        } catch let error as NSError {
+            print("error starting up Audio Engine: \(error.localizedDescription)")
+            return
+        }
         audioPlayerNode.play()
         manageButtons()
     }
 
-    func audioPlayerDidFinishPlaying(player: AVAudioPlayer!, successfully flag: Bool) {
+    func audioPlayerDidFinishPlaying(player: AVAudioPlayer, successfully flag: Bool) {
         manageButtons()
     }
 

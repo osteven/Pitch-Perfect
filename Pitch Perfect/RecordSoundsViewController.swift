@@ -15,7 +15,7 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     // MARK: -
     // MARK: Properties
     var audioRecorder: AVAudioRecorder? = nil
-    let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as! String
+    let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] 
     let wavFileNameFormatter = NSDateFormatter()
     let audioSession = AVAudioSession.sharedInstance()
     var recordedAudio: RecordedAudio? = nil
@@ -75,13 +75,13 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
 
     // MARK: -
     // MARK: Audio Recording Utility
-    func audioRecorderDidFinishRecording(recorder: AVAudioRecorder!, successfully flag: Bool) {
+    func audioRecorderDidFinishRecording(recorder: AVAudioRecorder, successfully flag: Bool) {
         if !flag {
-            println("Recording was not successful")
+            print("Recording was not successful")
             manageButtonsAndLabels()
             return
         }
-        if var title = recorder.url.lastPathComponent {
+        if let title = recorder.url.lastPathComponent {
             recordedAudio = RecordedAudio(title: title, andURL: recorder.url)
             self.performSegueWithIdentifier("stopRecording", sender: recordedAudio)
         }
@@ -93,37 +93,44 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     // MARK: Actions
 
     @IBAction func recordAudio() {
+        defer { manageButtonsAndLabels() }
         let wavFileRecordingName = wavFileNameFormatter.stringFromDate(NSDate())
         let pathArray = [dirPath, wavFileRecordingName]
-        let filePathURL = NSURL.fileURLWithPathComponents(pathArray)
-        var error: NSError?
-        audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord, error: &error)
-        if let e = error {
-            println("error setting up Audio Session: \(e.localizedDescription)")
-        } else {
-            audioRecorder = AVAudioRecorder(URL: filePathURL, settings: nil, error: &error)
-            if let aRecorder = audioRecorder {
-                aRecorder.delegate = self
-                aRecorder.prepareToRecord()
-                aRecorder.record()
-            } else if let e = error {
-                println("error setting up Audio Recorder: \(e.localizedDescription)")
-            } else {
-                println("unknown error setting up Audio Recorder")
-            }
+        guard let filePathURL = NSURL.fileURLWithPathComponents(pathArray) else { print("could not get url in recordAudio"); return }
+        do {
+            try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
+        } catch let error as NSError {
+            print("error setting up Audio Session: \(error.localizedDescription)")
+            return
         }
-        manageButtonsAndLabels()
+        do {
+            audioRecorder = try AVAudioRecorder(URL: filePathURL, settings: [String: AnyObject]())
+        } catch let error as NSError {
+            audioRecorder = nil
+            print("error setting up Audio Recorder: \(error.localizedDescription)")
+            return
+        }
+        if let aRecorder = audioRecorder {
+            aRecorder.delegate = self
+            aRecorder.prepareToRecord()
+            aRecorder.record()
+        } else {
+            print("unknown error setting up Audio Recorder")
+        }
     }
 
     @IBAction func stopRecording() {
-        if var ar = audioRecorder { ar.stop() }
-        audioSession.setActive(false, error: nil)
+        if let ar = audioRecorder { ar.stop() }
+        do {
+            try audioSession.setActive(false)
+        } catch _ {
+        }
         manageButtonsAndLabels()
     }
 
 
     @IBAction func pauseRecording() {
-        if var ar = audioRecorder {
+        if let ar = audioRecorder {
             ar.pause()
             recordingIsPaused = true
         }
@@ -131,7 +138,7 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     }
 
     @IBAction func resumeRecording() {
-        if var ar = audioRecorder { ar.record() }
+        if let ar = audioRecorder { ar.record() }
         recordingIsPaused = false
         managePauseResumeUI()
    }
