@@ -37,33 +37,28 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     // MARK: Loading and UI
     override func viewDidLoad() {
         super.viewDidLoad()
+        guard let recAudio = receivedAudio else { fatalError("Forgot to set receivedAudio in PlaySoundsViewController") }
 
-        if let recAudio = receivedAudio {
-            var error: NSError?
-            do {
-                audioPlayer = try AVAudioPlayer(contentsOfURL: recAudio.filePathURL)
-            } catch let error1 as NSError {
-                error = error1
-                audioPlayer = nil
-            }
-            if let aPlayer = audioPlayer {
-                aPlayer.delegate = self
-                aPlayer.enableRate = true
-                aPlayer.prepareToPlay()
-            } else if let e = error {
-                print("error loading receivedAudio URL: \(e.localizedDescription)")
-                return
-            } else {
-                print("unknown error creating Audio Player")
-                return
-            }
-            do {
-                audioFile = try AVAudioFile(forReading: recAudio.filePathURL)
-            } catch let error1 as NSError {
-                error = error1
-                audioFile = nil
-            }
-            if nil != error { print("error loading AVAudioFile: \(error!.localizedDescription)") }
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOfURL: recAudio.filePathURL)
+        } catch let error as NSError {
+            audioPlayer = nil
+            print("error creating AVAudioPlayer: \(error.localizedDescription)")
+            return
+        }
+        if let aPlayer = audioPlayer {
+            aPlayer.delegate = self
+            aPlayer.enableRate = true
+            aPlayer.prepareToPlay()
+        } else {
+            print("unknown error creating Audio Player")
+            return
+        }
+        do {
+            audioFile = try AVAudioFile(forReading: recAudio.filePathURL)
+        } catch let error as NSError {
+            print("error loading AVAudioFile: \(error.localizedDescription)")
+            audioFile = nil
         }
     }
 
