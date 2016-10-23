@@ -40,7 +40,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         guard let recAudio = receivedAudio else { fatalError("Forgot to set receivedAudio in PlaySoundsViewController") }
 
         do {
-            audioPlayer = try AVAudioPlayer(contentsOfURL: recAudio.filePathURL)
+            audioPlayer = try AVAudioPlayer(contentsOf: recAudio.filePathURL as URL)
         } catch let error as NSError {
             audioPlayer = nil
             print("error creating AVAudioPlayer: \(error.localizedDescription)")
@@ -55,36 +55,36 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
             return
         }
         do {
-            audioFile = try AVAudioFile(forReading: recAudio.filePathURL)
+            audioFile = try AVAudioFile(forReading: recAudio.filePathURL as URL)
         } catch let error as NSError {
             print("error loading AVAudioFile: \(error.localizedDescription)")
             audioFile = nil
         }
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         manageButtons()
     }
 
 
     func manageButtons() {
-        var notPlaying = ((audioPlayer == nil) || !audioPlayer!.playing)
+        var notPlaying = ((audioPlayer == nil) || !audioPlayer!.isPlaying)
         if (notPlaying) { notPlaying = !audioEngineIsPlaying }
 
-        stopPlayingButton.hidden = notPlaying
-        slowPlayButton.enabled = notPlaying
-        quickPlayButton.enabled = notPlaying
-        chipmunkPlayButton.enabled = notPlaying
-        darthVaderPlayButton.enabled = notPlaying
-        reverbPlayButton.enabled = notPlaying
-        echoPlayButton.enabled = notPlaying
+        stopPlayingButton.isHidden = notPlaying
+        slowPlayButton.isEnabled = notPlaying
+        quickPlayButton.isEnabled = notPlaying
+        chipmunkPlayButton.isEnabled = notPlaying
+        darthVaderPlayButton.isEnabled = notPlaying
+        reverbPlayButton.isEnabled = notPlaying
+        echoPlayButton.isEnabled = notPlaying
     }
 
 
     // MARK: -
     // MARK: Audio Play Utilities
-    func playSound(rate: Float) {
+    func playSound(_ rate: Float) {
         resetAudioEngine()
         if nil != audioPlayer {
             audioPlayer!.rate = rate
@@ -104,7 +104,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
 
     typealias EffectBlock = () -> AVAudioUnit
 
-    func playAudioWithVariablePitch(pitch: Float) {
+    func playAudioWithVariablePitch(_ pitch: Float) {
         func pitchBlock() -> AVAudioUnit {
             let changePitchEffect = AVAudioUnitTimePitch()
             changePitchEffect.pitch = pitch
@@ -119,28 +119,28 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         http://stackoverflow.com/questions/24443863/trouble-hooking-up-avaudiouniteffect-with-avaudioengine
         Closure ideas from: http://hondrouthoughts.blogspot.com/2014/09/more-avaudioplayernode-with-swift-and.html
     */
-    func audioEngineCommon(effectBlock: EffectBlock) {
+    func audioEngineCommon(_ effectBlock: EffectBlock) {
         guard let audioFile = self.audioFile else { print("audioFile is nil in audioEngineCommon"); return }
         if (nil != audioPlayer) { audioPlayer!.stop() }
         resetAudioEngine()
 
         let audioPlayerNode = AVAudioPlayerNode()
-        audioEngine.attachNode(audioPlayerNode)
+        audioEngine.attach(audioPlayerNode)
 
         let effectNode = effectBlock()
 
-        audioEngine.attachNode(effectNode)
+        audioEngine.attach(effectNode)
 
         audioEngine.connect(audioPlayerNode, to: effectNode, format: nil)
         audioEngine.connect(effectNode, to: audioEngine.outputNode, format: nil)
 
         audioEngineIsPlaying = true
-        audioPlayerNode.scheduleFile(audioFile, atTime: nil, completionHandler: { () -> Void in
+        audioPlayerNode.scheduleFile(audioFile, at: nil, completionHandler: { () -> Void in
             self.audioEngineIsPlaying = false
             self.audioEngineIsPlaying = false
             guard let lastRenderTime = audioPlayerNode.lastRenderTime,
-                let playerTime = audioPlayerNode.playerTimeForNodeTime(lastRenderTime) else {
-                dispatch_async(dispatch_get_main_queue()) { self.manageButtons() }
+                let playerTime = audioPlayerNode.playerTime(forNodeTime: lastRenderTime) else {
+                DispatchQueue.main.async { self.manageButtons() }
                 return
             }
 
@@ -152,8 +152,8 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
             */
             let remainingDuration = Double(audioFile.length) - Double(playerTime.sampleTime)
             let delayInSecs: Double =  Double(NSEC_PER_SEC) * (remainingDuration / audioFile.processingFormat.sampleRate)
-            let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(delayInSecs))
-            dispatch_after(delayTime, dispatch_get_main_queue(), { self.manageButtons() })
+            let delayTime = DispatchTime.now() + Double(Int64(delayInSecs)) / Double(NSEC_PER_SEC)
+            DispatchQueue.main.asyncAfter(deadline: delayTime, execute: { self.manageButtons() })
         })
 
         do {
@@ -166,7 +166,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         manageButtons()
     }
 
-    func audioPlayerDidFinishPlaying(player: AVAudioPlayer, successfully flag: Bool) {
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         manageButtons()
     }
 
@@ -195,7 +195,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     @IBAction func playSoundReverb() {
         func reverbBlock() -> AVAudioUnit {
             let reverbEffect = AVAudioUnitReverb()
-            reverbEffect.loadFactoryPreset(.Cathedral)
+            reverbEffect.loadFactoryPreset(.cathedral)
             reverbEffect.wetDryMix = 40
             return reverbEffect
         }

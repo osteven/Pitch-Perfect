@@ -15,8 +15,8 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     // MARK: -
     // MARK: Properties
     var audioRecorder: AVAudioRecorder? = nil
-    let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] 
-    let wavFileNameFormatter = NSDateFormatter()
+    let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] 
+    let wavFileNameFormatter = DateFormatter()
     let audioSession = AVAudioSession.sharedInstance()
     var recordedAudio: RecordedAudio? = nil
     var recordingIsPaused = false
@@ -41,31 +41,31 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         wavFileNameFormatter.dateFormat = "ddMMyyyy-HHmmss"
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         manageButtonsAndLabels()
         managePauseResumeUI()
     }
 
     func manageButtonsAndLabels() {
-        let recording = (audioRecorder != nil) ? audioRecorder!.recording : false
+        let recording = (audioRecorder != nil) ? audioRecorder!.isRecording : false
         recordingLabel.text = recording ? "Recording in progress" : "Tap to record"
-        stopRecordingButton.hidden = !recording
-        stopRecordingLabel.hidden = !recording
-        recordButton.enabled = !recording
-        pauseRecordingButton.hidden = !recording
-        resumeRecordingButton.hidden = !recording
+        stopRecordingButton.isHidden = !recording
+        stopRecordingLabel.isHidden = !recording
+        recordButton.isEnabled = !recording
+        pauseRecordingButton.isHidden = !recording
+        resumeRecordingButton.isHidden = !recording
         stopRecordingLabel.text = "Tap to finish or pause"
     }
 
     func managePauseResumeUI() {
-        pauseRecordingButton.enabled = !recordingIsPaused
-        resumeRecordingButton.enabled = recordingIsPaused
+        pauseRecordingButton.isEnabled = !recordingIsPaused
+        resumeRecordingButton.isEnabled = recordingIsPaused
         stopRecordingLabel.text = recordingIsPaused ? "Tap arrow to resume" : "Tap to finish or pause"
     }
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "stopRecording" {
-            let playSoundsVC = segue.destinationViewController as! PlaySoundsViewController
+            let playSoundsVC = segue.destination as! PlaySoundsViewController
             if let recAudio = sender as? RecordedAudio {
                 playSoundsVC.receivedAudio = recAudio
             }
@@ -75,16 +75,15 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
 
     // MARK: -
     // MARK: Audio Recording Utility
-    func audioRecorderDidFinishRecording(recorder: AVAudioRecorder, successfully flag: Bool) {
+    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         if !flag {
             print("Recording was not successful")
             manageButtonsAndLabels()
             return
         }
-        if let title = recorder.url.lastPathComponent {
-            recordedAudio = RecordedAudio(title: title, andURL: recorder.url)
-            self.performSegueWithIdentifier("stopRecording", sender: recordedAudio)
-        }
+        let title = recorder.url.lastPathComponent
+        recordedAudio = RecordedAudio(title: title, andURL: recorder.url)
+        self.performSegue(withIdentifier: "stopRecording", sender: recordedAudio)
         manageButtonsAndLabels()
     }
 
@@ -94,9 +93,12 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
 
     @IBAction func recordAudio() {
         defer { manageButtonsAndLabels() }
-        let wavFileRecordingName = wavFileNameFormatter.stringFromDate(NSDate())
-        let pathArray = [dirPath, wavFileRecordingName]
-        guard let filePathURL = NSURL.fileURLWithPathComponents(pathArray) else { print("could not get url in recordAudio"); return }
+
+        let wavFileRecordingName = wavFileNameFormatter.string(from: Date())
+        guard let documentsUrl = FileManager.default.urls(for: .documentDirectory,
+                                             in: .userDomainMask).first else { fatalError("documentDirectory fail") }
+        let filePathURL = URL(fileURLWithPath: wavFileRecordingName, relativeTo: documentsUrl)
+
         do {
             try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
         } catch let error as NSError {
@@ -104,7 +106,7 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
             return
         }
         do {
-            audioRecorder = try AVAudioRecorder(URL: filePathURL, settings: [String: AnyObject]())
+            audioRecorder = try AVAudioRecorder(url: filePathURL, settings: [String: AnyObject]())
         } catch let error as NSError {
             audioRecorder = nil
             print("error setting up Audio Recorder: \(error.localizedDescription)")
