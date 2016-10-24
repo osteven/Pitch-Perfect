@@ -93,6 +93,12 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
 
     @IBAction func recordAudio() {
         defer { manageButtonsAndLabels() }
+        do {
+            try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
+        } catch let error {
+            print("error setting up Audio Session: \(error.localizedDescription)")
+            return
+        }
 
         let wavFileRecordingName = wavFileNameFormatter.string(from: Date())
         guard let documentsUrl = FileManager.default.urls(for: .documentDirectory,
@@ -100,14 +106,8 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         let filePathURL = URL(fileURLWithPath: wavFileRecordingName, relativeTo: documentsUrl)
 
         do {
-            try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
-        } catch let error as NSError {
-            print("error setting up Audio Session: \(error.localizedDescription)")
-            return
-        }
-        do {
             audioRecorder = try AVAudioRecorder(url: filePathURL, settings: [String: AnyObject]())
-        } catch let error as NSError {
+        } catch let error {
             audioRecorder = nil
             print("error setting up Audio Recorder: \(error.localizedDescription)")
             return

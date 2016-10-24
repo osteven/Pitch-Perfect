@@ -41,7 +41,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
 
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: recAudio.filePathURL as URL)
-        } catch let error as NSError {
+        } catch let error {
             audioPlayer = nil
             print("error creating AVAudioPlayer: \(error.localizedDescription)")
             return
@@ -56,7 +56,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         }
         do {
             audioFile = try AVAudioFile(forReading: recAudio.filePathURL as URL)
-        } catch let error as NSError {
+        } catch let error {
             print("error loading AVAudioFile: \(error.localizedDescription)")
             audioFile = nil
         }
@@ -158,7 +158,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
 
         do {
             try audioEngine.start()
-        } catch let error as NSError {
+        } catch let error {
             print("error starting up Audio Engine: \(error.localizedDescription)")
             return
         }
